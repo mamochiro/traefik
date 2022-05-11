@@ -1,0 +1,33 @@
+ingressRoute:
+  name: gateway
+  namespace: dev
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: PathPrefix(`/md-fund/graphql`)
+      kind: Rule
+      middlewares:
+        - name: forward-auth
+          namespace: dev
+        - name: add-prefix
+          namespace: dev
+      services:
+        - name: custom-service
+          namespace: dev
+          port: 80
+  tls:
+    secretName: wildcard-tls-ingress
+
+middleware:
+  forwardAuth:
+    name: forward-auth
+    namespace: '' # namespace of pod
+    address: '' # address for check middleware
+    authResponseHeaders:
+      - 'rbw-ctx-app-name'
+      - 'rbw-ctx-app-prefix'
+  addPrefix:
+    name: 'name-prefix'
+    namespace: 'develop'
+    prefix: '/api/v1'
