@@ -1,0 +1,13 @@
+FROM rust:1.55 AS builder
+WORKDIR /app
+COPY Cargo.lock /app/Cargo.lock
+COPY Cargo.toml /app/Cargo.toml
+RUN mkdir -p src && echo 'fn main() {}' > src/main.rs && cargo update
+COPY . /app
+RUN cargo build --release
+
+FROM ubuntu:20.04
+WORKDIR /app
+COPY --from=builder /app/target/release/auth_server /app/auth_server
+COPY .env /app/.env
+CMD ./auth_server

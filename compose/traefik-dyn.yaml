@@ -1,0 +1,21 @@
+http:
+  middlewares:
+    roaHeaderAuth:
+      forwardAuth:
+        address: http://auth:8000/api/v1/auth/roa
+        authResponseHeaders:
+        - 'rbw-ctx-app-name'
+        - 'rbw-ctx-app-prefix'
+  services:
+    echo:
+      loadBalancer:
+        servers:
+        - url: http://echo:8888
+  routers:
+    echoRouter:
+      entryPoints:
+      - web
+      rule: "Path(`/echo/via-roa-auth`)"
+      service: echo
+      middlewares:
+      - roaHeaderAuth

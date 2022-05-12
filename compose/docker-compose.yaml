@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:2.5.1
+    ports:
+    - 80:80
+    volumes:
+    - $PWD/traefik.yaml:/etc/traefik/traefik.yaml
+    - $PWD/traefik-dyn.yaml:/etc/traefik/traefik-dyn.yaml
+  auth:
+    build:
+      context: ..
+      dockerfile: ./compose/Dockerfile-dev
+    ports:
+    - 8000:8000
+    environment:
+    - HTTP_PORT=8000
+  echo:
+    image: ealen/echo-server:latest
+    environment:
+    - PORT=8888
